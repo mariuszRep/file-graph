@@ -1,0 +1,82 @@
+:root {
+  color-scheme: dark;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: oklch(0.16 0.012 285);
+  color: oklch(0.9 0.012 285);
+  --background: oklch(0.16 0.012 285);
+  --panel: oklch(0.2 0.014 285);
+  --panel-strong: oklch(0.24 0.018 285);
+  --border: oklch(0.34 0.018 285);
+  --muted: oklch(0.68 0.018 285);
+  --primary: oklch(0.74 0.15 170);
+  --primary-foreground: oklch(0.14 0.012 285);
+  --danger: oklch(0.7 0.16 28);
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 960px; min-height: 100vh; background: radial-gradient(circle at top left, oklch(0.24 0.03 285), var(--background) 34rem); }
+button, input { font: inherit; }
+button svg { width: 1rem; height: 1rem; }
+
+.app { min-height: 100vh; display: flex; flex-direction: column; gap: 12px; padding: 16px; }
+.toolbar { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.toolbar h1 { margin: 0; font-size: clamp(1.4rem, 2.4vw, 2.3rem); letter-spacing: -0.04em; }
+.eyebrow { margin: 0 0 4px; color: var(--primary); font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; }
+.toolbar-actions, .workspace-row { display: flex; align-items: center; gap: 8px; }
+.status-pill { border: 1px solid var(--border); border-radius: 999px; color: var(--muted); padding: 7px 10px; font-size: 0.8rem; }
+
+.workspace-form { display: flex; flex-direction: column; gap: 6px; max-width: 760px; }
+.workspace-form label { color: var(--muted); font-size: 0.8rem; }
+.input { min-width: 520px; border: 1px solid var(--border); background: var(--panel); color: inherit; border-radius: 10px; padding: 10px 12px; }
+.input:focus { outline: 2px solid color-mix(in oklch, var(--primary), transparent 55%); outline-offset: 1px; }
+.button { border: 1px solid var(--border); border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; color: inherit; background: var(--panel-strong); padding: 10px 12px; }
+.button-sm { padding: 6px 9px; }
+.button-primary { background: var(--primary); color: var(--primary-foreground); border-color: transparent; font-weight: 700; }
+.button-ghost { background: transparent; }
+.button:disabled { cursor: not-allowed; opacity: 0.5; }
+.card { border: 1px solid var(--border); border-radius: 12px; background: var(--panel); box-shadow: 0 14px 40px rgb(0 0 0 / 0.24); }
+.card-header { display: flex; flex-direction: column; gap: 6px; padding: 10px 10px 0; }
+.card-title { margin: 0; font-size: 0.92rem; line-height: 1.15; }
+.card-description { margin: 0; color: var(--muted); }
+.card-content { padding: 10px; }
+.badge { display: inline-flex; align-items: center; width: fit-content; border-radius: 999px; border: 1px solid color-mix(in oklch, var(--primary), transparent 45%); color: var(--primary); padding: 3px 7px; font-size: 0.68rem; font-weight: 700; }
+.badge-secondary { border-color: var(--border); color: var(--muted); background: var(--panel-strong); }
+
+.app-shell { display: grid; grid-template-columns: minmax(280px, 360px) 1fr; gap: 12px; min-height: 0; flex: 1; }
+.panel { border: 1px solid var(--border); border-radius: 16px; background: color-mix(in oklch, var(--panel), transparent 8%); overflow: hidden; }
+.sidebar-panel { min-height: 0; }
+.canvas-panel { min-height: 620px; }
+.error-banner { border: 1px solid color-mix(in oklch, var(--danger), transparent 35%); background: color-mix(in oklch, var(--danger), transparent 86%); color: oklch(0.9 0.04 28); border-radius: 12px; padding: 10px 12px; }
+
+.empty-state { min-height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: var(--muted); text-align: center; padding: 24px; }
+.empty-state strong { color: oklch(0.88 0.012 285); }
+
+.file-tree { height: 100%; overflow: auto; padding: 8px; }
+.file-tree ul { list-style: none; margin: 0; padding: 0; }
+.tree-row { width: 100%; border: 0; background: transparent; color: oklch(0.86 0.012 285); display: flex; align-items: center; gap: 7px; text-align: left; border-radius: 8px; padding-block: 6px; cursor: pointer; }
+.tree-row:hover, .tree-row.is-selected { background: var(--panel-strong); color: var(--primary); }
+.tree-row span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tree-spacer { width: 1rem; height: 1rem; flex: 0 0 auto; }
+.chevron { transition: transform 150ms ease-out; }
+.chevron.is-open { transform: rotate(90deg); }
+
+.react-flow { background: oklch(0.145 0.01 285); }
+.react-flow__edge-path { stroke: color-mix(in oklch, var(--primary), transparent 35%); stroke-width: 1.5; }
+.graph-node { position: relative; width: 196px; padding: 0; }
+.graph-node.is-selected { border-color: var(--primary); box-shadow: 0 0 0 3px color-mix(in oklch, var(--primary), transparent 72%); }
+.graph-node-title { display: flex; align-items: center; gap: 8px; font-weight: 700; }
+.graph-node-title span, .graph-node-path { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.graph-node-path { font-size: 0.72rem; }
+.graph-node-meta-row { display: flex; align-items: center; gap: 6px; }
+.graph-handle { width: 10px; height: 10px; border: 2px solid var(--panel); background: var(--primary); }
+.graph-handle-target { left: -5px; }
+.graph-handle-source { right: -5px; }
+.graph-controls { display: flex; gap: 6px; }
+.file-graph-edge { stroke: color-mix(in oklch, var(--primary), transparent 28%); stroke-width: 1.8; }
+.file-graph-edge-dot { fill: var(--primary); filter: drop-shadow(0 0 7px color-mix(in oklch, var(--primary), transparent 35%)); }
+.edge-label { position: absolute; pointer-events: none; border: 1px solid color-mix(in oklch, var(--primary), transparent 55%); background: color-mix(in oklch, var(--panel), transparent 6%); color: var(--primary); border-radius: 999px; padding: 2px 7px; font-size: 0.65rem; font-weight: 700; box-shadow: 0 8px 20px rgb(0 0 0 / 0.24); }
+.graph-minimap { margin: 16px; overflow: hidden; border: 1px solid var(--border); border-radius: 12px; background: color-mix(in oklch, var(--panel), transparent 10%); box-shadow: 0 12px 34px rgb(0 0 0 / 0.24); }
+.graph-zoom-bar { display: flex; align-items: center; gap: 8px; min-width: 170px; border: 1px solid var(--border); border-radius: 12px; background: color-mix(in oklch, var(--panel), transparent 8%); padding: 6px 8px; color: var(--muted); font-size: 0.72rem; opacity: 0; transition: opacity 220ms ease-out; }
+.graph-zoom-bar.is-visible { opacity: 1; }
+.graph-zoom-track { flex: 1; height: 5px; overflow: hidden; border-radius: 999px; background: var(--panel-strong); }
+.graph-zoom-track span { display: block; height: 100%; background: var(--primary); transition: width 150ms ease-out; }

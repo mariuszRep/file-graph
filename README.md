@@ -1,73 +1,40 @@
-# React + TypeScript + Vite
+# File Graph
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+File Graph is a local-only browser app for exploring a filesystem/project as a graph. It pairs a file tree on the left with a React Flow canvas on the right, backed by a local Node API and SQLite database.
 
-Currently, two official plugins are available:
+## Architecture
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- `apps/web`: Vite, React, React Flow UI
+- `apps/server`: local Node/Express API for filesystem scanning and SQLite persistence
+- `packages/shared`: shared TypeScript schemas, entities, API DTOs, tree/graph contracts
 
-## React Compiler
+The frontend never scans the filesystem directly. It calls the local API under `/api`, and Vite proxies those requests to `http://localhost:4317` during development.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Run locally
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Then open the Vite URL, usually `http://localhost:5173`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## MVP flow
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+1. Enter an absolute local folder path.
+2. File Graph registers the workspace and scans it.
+3. Scan results are stored in `.file-graph/file-graph.sqlite`.
+4. The file tree renders folders/files.
+5. The graph renders file/folder nodes and containment edges.
+6. Selecting a tree item focuses/highlights the graph node. Selecting a graph node updates selection state.
+
+## Default ignored folders
+
+`.git`, `node_modules`, `dist`, `build`, `.next`, `coverage`, `.turbo`, `.cache`.
+
+## Current limitations
+
+- Scans are full deterministic scans, not incremental.
+- Graph relationships are hierarchy-only in the MVP.
+- Large repositories are capped by `FILE_GRAPH_MAX_NODES` with a default of `2500`.
+- There is no desktop shell yet. The app runs as a local web server plus browser UI.

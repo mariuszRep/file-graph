@@ -1,0 +1,5 @@
+{
+  "name": "@file-graph/server",
+  "private": true,
+  "type": "module"
+}
