@@ -71,7 +71,7 @@ button svg { width: 1rem; height: 1rem; }
 .graph-handle { width: 10px; height: 10px; border: 2px solid var(--panel); background: var(--primary); }
 .graph-handle-target { left: -5px; }
 .graph-handle-source { right: -5px; }
-.graph-controls { display: flex; gap: 6px; }
+.graph-controls { display: flex; gap: 6px; border: 1px solid var(--border); border-radius: 12px; background: color-mix(in oklch, var(--panel), transparent 8%); padding: 6px; box-shadow: 0 12px 34px rgb(0 0 0 / 0.24); }
 .file-graph-edge { stroke: color-mix(in oklch, var(--primary), transparent 28%); stroke-width: 1.8; }
 .file-graph-edge-dot { fill: var(--primary); filter: drop-shadow(0 0 7px color-mix(in oklch, var(--primary), transparent 35%)); }
 .edge-label { position: absolute; pointer-events: none; border: 1px solid color-mix(in oklch, var(--primary), transparent 55%); background: color-mix(in oklch, var(--panel), transparent 6%); color: var(--primary); border-radius: 999px; padding: 2px 7px; font-size: 0.65rem; font-weight: 700; box-shadow: 0 8px 20px rgb(0 0 0 / 0.24); }
@@ -80,3 +80,8 @@ button svg { width: 1rem; height: 1rem; }
 .graph-zoom-bar.is-visible { opacity: 1; }
 .graph-zoom-track { flex: 1; height: 5px; overflow: hidden; border-radius: 999px; background: var(--panel-strong); }
 .graph-zoom-track span { display: block; height: 100%; background: var(--primary); transition: width 150ms ease-out; }
+.graph-settings-pane { width: 250px; }
+.graph-settings-pane .card { background: color-mix(in oklch, var(--panel), transparent 4%); }
+.graph-settings-content { display: flex; flex-direction: column; gap: 10px; }
+.graph-stats { display: flex; flex-wrap: wrap; gap: 6px; }
+.graph-settings-help { margin: 0; color: var(--muted); font-size: 0.76rem; line-height: 1.4; }
