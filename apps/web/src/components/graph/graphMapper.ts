@@ -1,6 +1,6 @@
 import type { GraphResponse } from '@file-graph/shared'
 import { MarkerType, Position, type Edge, type Node } from '@xyflow/react'
-import { graphPosition } from './layout'
+import { forceDirectedLayout } from './layout'
 
 export type FileGraphNodeData = {
   label: string
@@ -12,16 +12,18 @@ export type FileGraphNodeData = {
 }
 
 export function toReactFlowGraph(graph: GraphResponse): { nodes: Node<FileGraphNodeData>[]; edges: Edge[] } {
-  const depthRows = new Map<number, number>()
+  const positions = forceDirectedLayout(
+    graph.nodes.map((node) => node.id),
+    graph.edges.map((edge) => ({ source: edge.source, target: edge.target })),
+  )
 
   return {
     nodes: graph.nodes.map((node) => {
-      const rowInDepth = depthRows.get(node.depth) ?? 0
-      depthRows.set(node.depth, rowInDepth + 1)
+      const position = positions.get(node.id) ?? { x: 0, y: 0 }
       return {
         id: node.id,
         type: 'fileGraphNode',
-        position: graphPosition(node, rowInDepth),
+        position,
         targetPosition: Position.Left,
         sourcePosition: Position.Right,
         data: {
