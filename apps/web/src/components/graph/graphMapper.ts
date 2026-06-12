@@ -6,7 +6,7 @@ export type FileGraphNodeData = {
   label: string
   path: string
   kind: 'file' | 'directory'
-  childCount: number
+  relationshipCount: number
   hasParent: boolean
   hasChildren: boolean
 }
@@ -28,7 +28,7 @@ export function toReactFlowGraph(graph: GraphResponse): { nodes: Node<FileGraphN
           label: node.label,
           path: node.path,
           kind: node.kind,
-          childCount: node.childCount,
+          relationshipCount: node.relationshipCount,
           hasParent: graph.edges.some((edge) => edge.target === node.id),
           hasChildren: graph.edges.some((edge) => edge.source === node.id),
         },
@@ -38,11 +38,12 @@ export function toReactFlowGraph(graph: GraphResponse): { nodes: Node<FileGraphN
       id: edge.id,
       source: edge.source,
       target: edge.target,
-      sourceHandle: 'children',
-      targetHandle: 'parent',
+      sourceHandle: 'imports',
+      targetHandle: 'imported-by',
       type: 'fileGraphEdge',
       animated: edge.kind === 'selected',
-      label: edge.kind,
+      label: edge.kind === 'reexports' ? 're-export' : 'import',
+      data: { specifier: edge.specifier },
       markerEnd: { type: MarkerType.ArrowClosed },
     })),
   }

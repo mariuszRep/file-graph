@@ -4,7 +4,7 @@ import { db } from './connection'
 
 type WorkspaceRow = { id: string; name: string; root_path: string; created_at: string; updated_at: string }
 type FileNodeRow = { id: string; workspace_id: string; parent_id: string | null; name: string; relative_path: string; absolute_path: string; kind: 'file' | 'directory'; size: number | null; depth: number; modified_at: string | null }
-type RelationshipRow = { id: string; workspace_id: string; source_id: string; target_id: string; kind: 'contains' | 'selected' }
+type RelationshipRow = { id: string; workspace_id: string; source_id: string; target_id: string; kind: 'imports' | 'reexports' | 'selected'; specifier: string | null }
 type ScanRow = { id: string; workspace_id: string; status: ScanSession['status']; started_at: string; completed_at: string | null; file_count: number; directory_count: number; error: string | null }
 
 const now = () => new Date().toISOString()
@@ -18,7 +18,7 @@ function fileNodeFromRow(row: FileNodeRow): FileNode {
 }
 
 function relationshipFromRow(row: RelationshipRow): Relationship {
-  return { id: row.id, workspaceId: row.workspace_id, sourceId: row.source_id, targetId: row.target_id, kind: row.kind }
+  return { id: row.id, workspaceId: row.workspace_id, sourceId: row.source_id, targetId: row.target_id, kind: row.kind, specifier: row.specifier }
 }
 
 function scanFromRow(row: ScanRow): ScanSession {
@@ -67,8 +67,8 @@ export const graphRepository = {
       db.prepare('DELETE FROM file_nodes WHERE workspace_id = ?').run(workspaceId)
       const insertNode = db.prepare('INSERT INTO file_nodes (id, workspace_id, parent_id, name, relative_path, absolute_path, kind, size, depth, modified_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
       for (const node of nodes) insertNode.run(node.id, node.workspaceId, node.parentId, node.name, node.relativePath, node.absolutePath, node.kind, node.size, node.depth, node.modifiedAt)
-      const insertRelationship = db.prepare('INSERT INTO relationships (id, workspace_id, source_id, target_id, kind) VALUES (?, ?, ?, ?, ?)')
-      for (const relationship of relationships) insertRelationship.run(relationship.id, relationship.workspaceId, relationship.sourceId, relationship.targetId, relationship.kind)
+      const insertRelationship = db.prepare('INSERT INTO relationships (id, workspace_id, source_id, target_id, kind, specifier) VALUES (?, ?, ?, ?, ?, ?)')
+      for (const relationship of relationships) insertRelationship.run(relationship.id, relationship.workspaceId, relationship.sourceId, relationship.targetId, relationship.kind, relationship.specifier)
     })
     replace()
   },

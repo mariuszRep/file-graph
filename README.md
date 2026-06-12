@@ -25,8 +25,9 @@ Then open the Vite URL, usually `http://localhost:5173`.
 2. File Graph registers the workspace and scans it.
 3. Scan results are stored in `.file-graph/file-graph.sqlite`.
 4. The file tree renders folders/files.
-5. The graph renders file/folder nodes and containment edges.
-6. Selecting a tree item focuses/highlights the graph node. Selecting a graph node updates selection state.
+5. The tree renders folder structure.
+6. The graph renders code-file relationships from local imports and re-exports, not folder containment.
+7. Selecting a tree item focuses/highlights the graph node when that file participates in code relationships. Selecting a graph node updates selection state.
 
 ## Default ignored folders
 
@@ -35,6 +36,6 @@ Then open the Vite URL, usually `http://localhost:5173`.
 ## Current limitations
 
 - Scans are full deterministic scans, not incremental.
-- Graph relationships are hierarchy-only in the MVP.
+- Graph relationships currently cover local JavaScript/TypeScript imports and re-exports.
 - Large repositories are capped by `FILE_GRAPH_MAX_NODES` with a default of `2500`.
 - There is no desktop shell yet. The app runs as a local web server plus browser UI.

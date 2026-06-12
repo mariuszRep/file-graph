@@ -41,7 +41,8 @@ export function applySchema(db: Database.Database) {
       source_id TEXT NOT NULL REFERENCES file_nodes(id) ON DELETE CASCADE,
       target_id TEXT NOT NULL REFERENCES file_nodes(id) ON DELETE CASCADE,
       kind TEXT NOT NULL,
-      UNIQUE(workspace_id, source_id, target_id, kind)
+      specifier TEXT,
+      UNIQUE(workspace_id, source_id, target_id, kind, specifier)
     );
 
     CREATE TABLE IF NOT EXISTS selections (
@@ -51,4 +52,8 @@ export function applySchema(db: Database.Database) {
       updated_at TEXT NOT NULL
     );
   `)
+  const relationshipColumns = db.prepare('PRAGMA table_info(relationships)').all() as Array<{ name: string }>
+  if (!relationshipColumns.some((column) => column.name === 'specifier')) {
+    db.exec('ALTER TABLE relationships ADD COLUMN specifier TEXT')
+  }
 }

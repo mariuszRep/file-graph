@@ -23,7 +23,7 @@ type FileGraphCanvasProps = {
 function CanvasInner({ graph, selectedId, onSelect }: FileGraphCanvasProps) {
   const mapped = useMemo(() => (graph ? toReactFlowGraph(graph) : { nodes: [], edges: [] }), [graph])
 
-  if (!graph || graph.nodes.length === 0) return <EmptyState title="No graph yet" description="Scan a folder to create graph nodes and relationships." />
+  if (!graph || graph.nodes.length === 0) return <EmptyState title="No code relationships yet" description="The tree shows folders. The canvas appears after a scan finds local imports or re-exports between files." />
 
   const graphSignature = `${graph.workspaceId}:${graph.nodes.map((node) => node.id).join(',')}:${graph.edges.map((edge) => edge.id).join(',')}`
 

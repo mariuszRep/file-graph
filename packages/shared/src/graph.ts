@@ -8,7 +8,7 @@ export const graphNodeSchema = z.object({
   path: z.string(),
   kind: fileKindSchema,
   depth: z.number().int().nonnegative(),
-  childCount: z.number().int().nonnegative(),
+  relationshipCount: z.number().int().nonnegative(),
 })
 export type GraphNode = z.infer<typeof graphNodeSchema>
 
@@ -17,6 +17,7 @@ export const graphEdgeSchema = z.object({
   source: z.string(),
   target: z.string(),
   kind: relationshipKindSchema,
+  specifier: z.string().nullable(),
 })
 export type GraphEdge = z.infer<typeof graphEdgeSchema>
 

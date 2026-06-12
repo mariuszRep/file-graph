@@ -3,6 +3,7 @@ import { readdirSync, statSync } from 'node:fs'
 import { basename, join, relative, resolve } from 'node:path'
 import type { FileNode, Relationship, Workspace } from '@file-graph/shared'
 import { shouldIgnorePath } from './ignoreRules'
+import { buildCodeRelationships } from './codeRelationships'
 
 type ScanResult = {
   nodes: FileNode[]
@@ -23,7 +24,6 @@ export function scanWorkspace(workspace: Workspace): ScanResult {
   if (!rootStat.isDirectory()) throw new Error('Workspace root must be a directory')
 
   const nodes: FileNode[] = []
-  const relationships: Relationship[] = []
   let fileCount = 0
   let directoryCount = 0
 
@@ -45,7 +45,6 @@ export function scanWorkspace(workspace: Workspace): ScanResult {
       depth,
       modifiedAt: toIso(stats.mtimeMs),
     })
-    if (parentId) relationships.push({ id: randomUUID(), workspaceId: workspace.id, sourceId: parentId, targetId: id, kind: 'contains' })
     if (kind === 'file') fileCount += 1
     if (kind === 'directory') {
       directoryCount += 1
@@ -62,5 +61,6 @@ export function scanWorkspace(workspace: Workspace): ScanResult {
   }
 
   visit(rootPath, null, 0)
+  const relationships: Relationship[] = buildCodeRelationships(workspace, nodes)
   return { nodes, relationships, fileCount, directoryCount }
 }

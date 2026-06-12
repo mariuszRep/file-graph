@@ -41,7 +41,7 @@ export const fileNodeSchema = z.object({
 })
 export type FileNode = z.infer<typeof fileNodeSchema>
 
-export const relationshipKindSchema = z.enum(['contains', 'selected'])
+export const relationshipKindSchema = z.enum(['imports', 'reexports', 'selected'])
 export type RelationshipKind = z.infer<typeof relationshipKindSchema>
 
 export const relationshipSchema = z.object({
@@ -50,5 +50,6 @@ export const relationshipSchema = z.object({
   sourceId: z.string(),
   targetId: z.string(),
   kind: relationshipKindSchema,
+  specifier: z.string().nullable().default(null),
 })
 export type Relationship = z.infer<typeof relationshipSchema>

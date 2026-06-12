@@ -31,7 +31,7 @@ export function GraphSettingsPane({ locked, showMiniMap, nodeCount, edgeCount, o
           <Button size="sm" variant={showMiniMap ? 'primary' : 'secondary'} onClick={() => onMiniMapChange(!showMiniMap)}>
             {showMiniMap ? 'Hide sidemap' : 'Show sidemap'}
           </Button>
-          <p className="graph-settings-help">Drag nodes to rearrange the graph. Edges stay connected through explicit parent/children handles.</p>
+          <p className="graph-settings-help">Drag nodes to rearrange import/export relationships. The file tree remains responsible for folder structure.</p>
         </CardContent>
       </Card>
     </Panel>
