@@ -1,6 +1,6 @@
 import type { GraphResponse } from '@file-graph/shared'
 import { MarkerType, Position, type Edge, type Node } from '@xyflow/react'
-import { forceDirectedLayout } from './layout'
+import { layeredLayout } from './layout'
 
 export type FileGraphNodeData = {
   label: string
@@ -9,13 +9,18 @@ export type FileGraphNodeData = {
   relationshipCount: number
   hasParent: boolean
   hasChildren: boolean
+  inRelationshipChain: boolean
 }
 
-export function toReactFlowGraph(graph: GraphResponse): { nodes: Node<FileGraphNodeData>[]; edges: Edge[] } {
-  const positions = forceDirectedLayout(
+export function toReactFlowGraph(graph: GraphResponse, highlightIds: Set<string>): { nodes: Node<FileGraphNodeData>[]; edges: Edge[] } {
+  const positions = layeredLayout(
     graph.nodes.map((node) => node.id),
     graph.edges.map((edge) => ({ source: edge.source, target: edge.target })),
   )
+
+  // Nodes to visually emphasize (computed by the caller). Empty means no selection.
+  const relationshipChain = highlightIds
+  const hasSelection = relationshipChain.size > 0
 
   return {
     nodes: graph.nodes.map((node) => {
@@ -33,6 +38,7 @@ export function toReactFlowGraph(graph: GraphResponse): { nodes: Node<FileGraphN
           relationshipCount: node.relationshipCount,
           hasParent: graph.edges.some((edge) => edge.target === node.id),
           hasChildren: graph.edges.some((edge) => edge.source === node.id),
+          inRelationshipChain: relationshipChain.has(node.id),
         },
       }
     }),
@@ -45,8 +51,9 @@ export function toReactFlowGraph(graph: GraphResponse): { nodes: Node<FileGraphN
       type: 'fileGraphEdge',
       animated: edge.kind === 'selected',
       label: edge.kind === 'reexports' ? 're-export' : 'import',
-      data: { specifier: edge.specifier },
+      data: { specifier: edge.specifier, inRelationshipChain: relationshipChain.has(edge.source) && relationshipChain.has(edge.target) },
       markerEnd: { type: MarkerType.ArrowClosed },
+      style: hasSelection && !(relationshipChain.has(edge.source) && relationshipChain.has(edge.target)) ? { opacity: 0.2 } : undefined,
     })),
   }
 }

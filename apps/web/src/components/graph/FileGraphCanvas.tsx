@@ -21,7 +21,7 @@ type FileGraphCanvasProps = {
 }
 
 function CanvasInner({ graph, selectedId, onSelect }: FileGraphCanvasProps) {
-  const mapped = useMemo(() => (graph ? toReactFlowGraph(graph) : { nodes: [], edges: [] }), [graph])
+  const mapped = useMemo(() => (graph ? toReactFlowGraph(graph, selectedId) : { nodes: [], edges: [] }), [graph, selectedId])
 
   if (!graph || graph.nodes.length === 0) return <EmptyState title="No code relationships yet" description="The tree shows folders. The canvas appears after a scan finds local imports or re-exports between files." />
 
@@ -48,8 +48,14 @@ function ControlledGraph({ initialNodes, initialEdges, selectedId, onSelect }: C
   const renderedNodes = useMemo(() => nodes.map((node) => ({ ...node, selected: node.id === selectedId })), [nodes, selectedId])
 
   useEffect(() => {
-    if (selectedId) flow.fitView({ nodes: [{ id: selectedId }], duration: 300, padding: 0.5 })
-  }, [flow, selectedId])
+    if (selectedId) {
+      // Zoom to fit the entire relationship chain, not just the selected node
+      const chainNodes = nodes.filter((node) => node.data.inRelationshipChain)
+      if (chainNodes.length > 0) {
+        flow.fitView({ nodes: chainNodes.map((n) => ({ id: n.id })), duration: 300, padding: 0.5 })
+      }
+    }
+  }, [flow, selectedId, nodes])
 
   return (
     <ReactFlow

@@ -1,5 +1,5 @@
 import type { FileTreeNode, GraphResponse, ScanSession, TreeResponse, Workspace } from '@file-graph/shared'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { FileTree } from './components/file-tree/FileTree'
 import { FileGraphCanvas } from './components/graph/FileGraphCanvas'
 import { AppShell } from './components/layout/AppShell'
@@ -14,6 +14,8 @@ function App() {
   const [graph, setGraph] = useState<GraphResponse | null>(null)
   const [scan, setScan] = useState<ScanSession | null>(null)
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [relationshipChain, setRelationshipChain] = useState<Set<string>>(new Set())
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -77,13 +79,45 @@ function App() {
     if (workspace) void api.setSelection(workspace.id, id, 'graph')
   }
 
+  function handleToggleFolder(id: string) {
+    setExpandedFolders((current) => {
+      const next = new Set(current)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  // Compute relationship chain when selection or graph changes
+  useEffect(() => {
+    if (!selectedId || !graph) {
+      setRelationshipChain(new Set())
+      return
+    }
+    const chain = new Set<string>()
+    const visited = new Set<string>()
+    const queue = [selectedId]
+    while (queue.length > 0) {
+      const current = queue.shift()!
+      if (visited.has(current)) continue
+      visited.add(current)
+      chain.add(current)
+      for (const edge of graph.edges) {
+        if (edge.source === current && !visited.has(edge.target)) queue.push(edge.target)
+        if (edge.target === current && !visited.has(edge.source)) queue.push(edge.source)
+      }
+    }
+    setRelationshipChain(chain)
+  }, [selectedId, graph])
+
+
   return (
     <div className="app">
       <Toolbar workspace={workspace} scan={scan} loading={loading} onRescan={handleRescan} />
       <WorkspaceForm loading={loading} onSubmit={handleWorkspace} />
       {error ? <div className="error-banner">{error}</div> : null}
       <AppShell
-        sidebar={workspace ? <FileTree root={tree?.root ?? null} selectedId={selectedId} onSelect={selectFromTree} /> : <EmptyState title="No folder selected" description="Enter an absolute local path to start exploring." />}
+        sidebar={workspace ? <FileTree root={tree?.root ?? null} selectedId={selectedId} onSelect={selectFromTree} relationshipChain={relationshipChain} expanded={expandedFolders} onToggle={handleToggleFolder} /> : <EmptyState title="No folder selected" description="Enter an absolute local path to start exploring." />}
         canvas={<FileGraphCanvas graph={graph} selectedId={selectedId} onSelect={selectFromGraph} />}
       />
     </div>
